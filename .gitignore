@@ -1,0 +1,6 @@
+# Keep this deployment repo focused on the static CV site.
+*
+!index.html
+!cv.html
+!README.md
+!.gitignore
