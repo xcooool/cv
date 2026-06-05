@@ -566,8 +566,8 @@
 
   <script>
     const PASSWORD_HASH = 'e488dcfeffefa05968b3e9df8fe2e0ca69508fe6be7bed164da5168d327f09bd';
-    const AUTH_KEY = 'cv-authenticated';
     let resumeStarted = false;
+    sessionStorage.removeItem('cv-authenticated');
 
     function typeText(el, text, speed, cb) {
       let i = 0;
@@ -623,7 +623,6 @@
     }
 
     function unlockPage() {
-      sessionStorage.setItem(AUTH_KEY, '1');
       document.body.classList.remove('auth-locked');
       document.getElementById('auth-screen').hidden = true;
       initResume();
@@ -649,10 +648,6 @@
         error.textContent = '密码不正确，请重试。';
       }
     });
-
-    if (sessionStorage.getItem(AUTH_KEY) === '1') {
-      unlockPage();
-    }
   </script>
 </body>
 </html>
