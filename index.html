@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="徐楚鸥 — 算法工程师 · 香港科技大学 · 蚂蚁集团支付宝" />
+  <title>徐楚鸥 · 简历</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-alt: #f7f7f8;
+      --surface: #ffffff;
+      --surface-hover: #f4f4f4;
+      --border: #ececf1;
+      --border-hover: #d9d9e3;
+      --text: #0d0d0d;
+      --text-secondary: #353740;
+      --text-muted: #6e6e80;
+      --green: #10a37f;
+      --green-hover: #0d8c6d;
+      --green-soft: rgba(16, 163, 127, 0.08);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+      --max: 768px;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    body.auth-locked { min-height: 100vh; overflow: hidden; }
+    body.auth-locked .topbar,
+    body.auth-locked .page,
+    body.auth-locked .loader { display: none; }
+
+    a { color: var(--green); text-decoration: none; transition: color 0.2s var(--ease); }
+    a:hover { color: var(--green-hover); text-decoration: underline; }
+
+    .auth-screen {
+      position: fixed; inset: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      background:
+        radial-gradient(circle at top left, rgba(16, 163, 127, 0.09), transparent 34%),
+        linear-gradient(180deg, #ffffff 0%, #f7f7f8 100%);
+      padding: 24px;
+    }
+    .auth-panel {
+      width: min(100%, 360px);
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      padding: 28px;
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+    }
+    .auth-logo {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 18px; font-weight: 600;
+      margin-bottom: 18px;
+    }
+    .auth-panel h1 {
+      font-size: 21px; font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .auth-panel p {
+      font-size: 13px; color: var(--text-muted);
+      line-height: 1.65; margin-bottom: 20px;
+    }
+    .auth-field { display: flex; flex-direction: column; gap: 8px; }
+    .auth-field label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+    .auth-field input {
+      width: 100%; min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0 12px;
+      color: var(--text);
+      background: #fff;
+      font: inherit;
+      outline: none;
+      transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    }
+    .auth-field input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px var(--green-soft);
+    }
+    .auth-button {
+      width: 100%; min-height: 44px;
+      border: none; border-radius: var(--radius-sm);
+      background: var(--green); color: #fff;
+      font: inherit; font-weight: 600;
+      margin-top: 14px;
+      cursor: pointer;
+      transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+    .auth-button:hover { background: var(--green-hover); transform: translateY(-1px); }
+    .auth-error {
+      min-height: 20px;
+      margin-top: 10px;
+      color: #b42318;
+      font-size: 12px;
+    }
+
+    .loader {
+      position: fixed; inset: 0; background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; transition: opacity 0.4s var(--ease), visibility 0.4s;
+    }
+    .loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-dots { display: flex; gap: 6px; }
+    .loader-dots span {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--text-muted);
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .loader-dots span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-8px); opacity: 1; }
+    }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      transform: translateY(-100%);
+      animation: slideDown 0.5s var(--ease) 0.3s forwards;
+    }
+    @keyframes slideDown { to { transform: translateY(0); } }
+
+    .topbar-inner {
+      max-width: var(--max); margin: 0 auto;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .topbar-logo {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; color: #fff; flex-shrink: 0;
+    }
+    .topbar-title { font-size: 14px; font-weight: 500; }
+    .topbar-sub { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+
+    .page { max-width: var(--max); margin: 0 auto; padding: 32px 20px 80px; }
+
+    .reveal {
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    .hero { padding: 16px 0 40px; }
+    .avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--green-soft);
+      border: 1.5px solid rgba(16, 163, 127, 0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 600; color: var(--green);
+      margin-bottom: 20px;
+      animation: avatarPop 0.6s var(--ease-spring) 0.4s both;
+    }
+    @keyframes avatarPop {
+      from { opacity: 0; transform: scale(0.6); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .hero h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.025em; margin-bottom: 8px; }
+    .hero-tagline { font-size: 15px; color: var(--text-muted); margin-bottom: 22px; }
+    .cursor {
+      display: inline-block; width: 2px; height: 1.1em;
+      background: var(--green); margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      padding: 6px 14px; background: var(--bg-alt);
+      border: 1px solid var(--border); border-radius: 999px;
+      font-size: 13px; color: var(--text-secondary);
+      transition: all 0.2s var(--ease);
+    }
+    .pill:hover { background: var(--surface-hover); border-color: var(--border-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .pill a { color: var(--text-secondary); text-decoration: none; }
+    .pill a:hover { color: var(--green); text-decoration: none; }
+
+    .block { margin-bottom: 4px; }
+    .block-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-muted);
+      padding: 24px 0 10px 2px;
+    }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px 24px;
+      transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease), transform 0.25s var(--ease);
+    }
+    .card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+    .entry { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .entry:first-child { padding-top: 0; }
+    .entry:last-child { border-bottom: none; padding-bottom: 0; }
+    .entry-head {
+      display: flex; flex-wrap: wrap; align-items: baseline;
+      justify-content: space-between; gap: 4px 12px; margin-bottom: 2px;
+    }
+    .entry-title { font-size: 15px; font-weight: 600; }
+    .entry-date { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+    .entry-sub { font-size: 13px; color: var(--text-muted); }
+
+    .entry-bullets {
+      list-style: none; margin-top: 8px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .entry-bullets li {
+      font-size: 13px; color: var(--text-secondary);
+      padding-left: 16px; position: relative; line-height: 1.65;
+    }
+    .entry-bullets li::before {
+      content: ""; position: absolute; left: 0; top: 9px;
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--green); opacity: 0.55;
+    }
+
+    .list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .list li {
+      font-size: 14px; color: var(--text-secondary);
+      padding-left: 18px; position: relative; line-height: 1.7;
+    }
+    .list li::before {
+      content: ""; position: absolute; left: 0; top: 10px;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); opacity: 0.55;
+    }
+
+    .paper-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; line-height: 1.55; }
+    .paper-title a { color: var(--text); }
+    .paper-title a:hover { color: var(--green); text-decoration: none; }
+    .badge {
+      display: inline-block; font-size: 11px; font-weight: 500;
+      padding: 2px 8px; border-radius: 999px;
+      background: var(--green-soft); color: var(--green);
+      vertical-align: middle; margin-left: 4px;
+    }
+    .paper-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+    .paper-minor {
+      font-size: 14px; color: var(--text-secondary);
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .paper-minor:last-child { border-bottom: none; padding-bottom: 0; }
+    .paper-minor a { color: var(--text-secondary); font-weight: 500; }
+    .paper-minor a:hover { color: var(--green); }
+    .paper-minor .paper-meta { margin: 4px 0 0; margin-bottom: 0; }
+
+    .project { padding: 18px 0; border-bottom: 1px solid var(--border); }
+    .project:first-child { padding-top: 0; }
+    .project:last-child { border-bottom: none; padding-bottom: 0; }
+    .project-head {
+      display: flex; flex-wrap: wrap; align-items: baseline;
+      gap: 6px 10px; margin-bottom: 8px;
+    }
+    .project-head h3 { font-size: 15px; font-weight: 600; }
+    .project-org { font-size: 12px; color: var(--text-muted); }
+    .project-date { margin-left: auto; font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+    .project-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; }
+    .sub-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 14px 0 8px; }
+    .metric { color: var(--green); font-weight: 500; }
+    .strong { color: var(--text); font-weight: 500; }
+
+    .refs {
+      margin-top: 12px; padding: 14px 16px;
+      background: var(--bg-alt); border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 12px; color: var(--text-muted); line-height: 1.85;
+    }
+
+    footer { text-align: center; font-size: 12px; color: var(--text-muted); padding: 40px 0 0; }
+
+    @media print {
+      .loader, .topbar, .auth-screen { display: none; }
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .card:hover { box-shadow: none; transform: none; }
+      body { font-size: 12px; }
+      .page { padding: 0 16px 24px; }
+      .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+      .project { break-inside: avoid; }
+      a { color: var(--text); text-decoration: none; }
+    }
+    @media (max-width: 560px) {
+      .hero h1 { font-size: 24px; }
+      .project-date { margin-left: 0; width: 100%; }
+      .entry-head { flex-direction: column; gap: 2px; }
+      .topbar-sub { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body class="auth-locked">
+
+  <main class="auth-screen" id="auth-screen" aria-labelledby="auth-title">
+    <form class="auth-panel" id="auth-form">
+      <div class="auth-logo">徐</div>
+      <h1 id="auth-title">访问简历</h1>
+      <p>请输入访问密码，验证后可查看完整内容。</p>
+      <div class="auth-field">
+        <label for="auth-password">密码</label>
+        <input id="auth-password" name="password" type="password" autocomplete="current-password" required autofocus />
+      </div>
+      <button class="auth-button" type="submit">进入</button>
+      <div class="auth-error" id="auth-error" role="status" aria-live="polite"></div>
+    </form>
+  </main>
+
+  <div class="loader" id="loader">
+    <div class="loader-dots"><span></span><span></span><span></span></div>
+  </div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-logo">徐</div>
+      <span class="topbar-title">徐楚鸥 · 简历</span>
+      <span class="topbar-sub">算法工程师</span>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <section class="hero reveal">
+      <div class="avatar">徐</div>
+      <h1 id="hero-name"></h1>
+      <p class="hero-tagline" id="hero-tagline"></p>
+      <div class="pills" id="hero-pills" style="opacity:0;transition:opacity 0.4s var(--ease)">
+        <span class="pill"><a href="tel:17815880107">17815880107</a></span>
+        <span class="pill"><a href="mailto:cxubw@connect.ust.hk">cxubw@connect.ust.hk</a></span>
+        <span class="pill"><a href="https://xcooool.github.io/" target="_blank" rel="noopener">xcooool.github.io</a></span>
+        <span class="pill">女 · 25 岁 · 中共党员</span>
+        <span class="pill">香港科技大学 · 26 届计算机科学与技术</span>
+      </div>
+    </section>
+
+    <div class="block reveal">
+      <div class="block-label">教育经历</div>
+      <div class="card">
+        <div class="entry">
+          <div class="entry-head">
+            <span class="entry-title">香港科技大学</span>
+            <span class="entry-date">2024.09 — 2025.07 · GPA 3.7/4.0</span>
+          </div>
+          <div class="entry-sub">理学硕士 · Big Data Technology</div>
+        </div>
+        <div class="entry">
+          <div class="entry-head">
+            <span class="entry-title">北京航空航天大学</span>
+            <span class="entry-date">2019.09 — 2024.07 · GPA 3.6/4.0</span>
+          </div>
+          <div class="entry-sub">工学学士 · 计算机科学与技术（机械工程转专业）</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <div class="block-label">个人荣誉</div>
+      <div class="card">
+        <ul class="list">
+          <li>2022 北京市 3D Solidworks 工程制图竞赛个人一等奖 &amp; 团体一等奖</li>
+          <li>2023 北航计算机学院优秀共产党员 · 学院宣传部部长 · 校党校第 73 期班长</li>
+          <li>2025 HK InnoX 创业冬令营晋级 HKSTP Ideation Programme</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <div class="block-label">论文发表</div>
+      <div class="card">
+        <div class="project" style="padding-top:0;border:none;">
+          <div class="paper-title">
+            <a href="https://arxiv.org/pdf/2604.19567" target="_blank" rel="noopener">
+              Multi-modal Reasoning with LLMs for Visual Semantic Arithmetic
+            </a>
+            <span class="badge">独立一作</span>
+          </div>
+          <div class="paper-meta">香港科技大学 · Advisor: Prof. 陈启峰</div>
+          <ul class="list">
+            <li>提出 Visual Semantic Arithmetic 多模态推理任务，设计 two-term subtraction / three-term operation 两类语义算术范式；构建覆盖 18 类视觉语义关系、1,500+ subject-object 关系对，用于衡量 LVLM 的跨模态关系抽象、类比迁移与组合推理能力。</li>
+            <li>构建 Image-Relation-Pair Dataset (IRPD) benchmark，并提出 SAri-RFT 强化微调方法；基于 Qwen2-VL-7B，相较 SFT baseline，在 two-term image-input 4-option 单选任务上准确率提升 <span class="metric">62.59%</span>，在 three-term 语义生成任务上语义相似度指标提升 <span class="metric">85.85%</span>。</li>
+          </ul>
+        </div>
+        <div class="paper-minor">
+          <a href="https://arxiv.org/pdf/2401.17268" target="_blank" rel="noopener">Weaver: Foundation Models for Creative Writing</a>
+          <div class="paper-meta">AIWaves</div>
+        </div>
+        <div class="paper-minor">
+          <a href="https://arxiv.org/pdf/2602.06093" target="_blank" rel="noopener">NANONET: Parameter-Efficient Learning with Label-Scarce Supervision for Lightweight Text Mining Model</a>
+          <div class="paper-meta">Beihang ACT Lab</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <div class="block-label">工作经历</div>
+      <div class="card">
+        <div class="entry">
+          <div class="entry-head">
+            <span class="entry-title">蚂蚁集团 · 支付宝</span>
+            <span class="entry-date">2024.06—2024.08（实习）→ 2025.08—至今</span>
+          </div>
+          <div class="entry-sub">算法工程师 · 杭州</div>
+        </div>
+        <div class="entry">
+          <div class="entry-head">
+            <span class="entry-title">Amber Group</span>
+            <span class="entry-date">2025.02 — 2025.06</span>
+          </div>
+          <div class="entry-sub">AI Research Intern · 香港</div>
+          <ul class="entry-bullets">
+            <li>Uniswap 调研等；负责 <a href="https://x.com/mwa_ia" target="_blank" rel="noopener">@mwa_ia</a> 推文评测</li>
+            <li>作为唯一实习生参与 Amber Group 2025 Q1 Earnings Call</li>
+          </ul>
+        </div>
+        <div class="entry">
+          <div class="entry-head">
+            <span class="entry-title">AIWaves 波形智能</span>
+            <span class="entry-date">2024.01 — 2024.03</span>
+          </div>
+          <div class="entry-sub">NLP 算法工程师（实习）· 杭州</div>
+        </div>
+        <div class="entry">
+          <div class="entry-head">
+            <span class="entry-title">小米集团技术委员会</span>
+            <span class="entry-date">2023.11 — 2024.01</span>
+          </div>
+          <div class="entry-sub">NLP 算法工程师（实习）· 北京</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <div class="block-label">项目经历</div>
+      <div class="card">
+
+        <article class="project">
+          <div class="project-head">
+            <h3>小指令支付漏损智能洞察</h3>
+            <span class="project-org">蚂蚁集团 · 数字支付技术部</span>
+            <span class="project-date">2025.09 — 2025.12</span>
+          </div>
+          <p class="project-desc">面向 NFC「碰一下」场景，构建多模态大模型自动归因系统，替代人工排查 N 设备已回传支付码但商户未创单的漏损问题。</p>
+          <ul class="list">
+            <li>负责漏损归因全流程：问题建模、标注规范、SFT 训练、评测及数据库构建</li>
+            <li>基于 POS 动线截图序列重定义 TOP 10 漏损类别（UI / 文本 / 时序多模态特征）；独立搭建 2.5 万+ 样本标注数据库与「标注-推理-再标注」闭环流水线，覆盖干净/脏/未标注分级、简单困难样本分级、vLLM 批量推理、混淆矩阵评测、版本回滚及 iTag 二次标注包自动生成</li>
+            <li>模型分类准确率从人工标注的 <span class="metric">79%</span> 提升到 <span class="metric">91.3%</span>，一次碰成功率 <span class="metric">+0.7pp 至 82.54%</span>，离线标注人效提升 <span class="metric">100 倍</span></li>
+          </ul>
+        </article>
+
+        <article class="project">
+          <div class="project-head">
+            <h3>POS 收银视频时序分割与理解</h3>
+            <span class="project-org">蚂蚁集团 · 数字支付技术部</span>
+            <span class="project-date">2025.09 — 2025.11</span>
+          </div>
+          <p class="project-desc">对 POS 视频流进行基于状态机的语义分段，自动识别商品添加、结算、会员录入等关键收银阶段，部署 MAYA 平台供下游消费。</p>
+          <ul class="list">
+            <li>构建 ≥3,000 条标注视频样本，设计 5 类标签体系；采用 MLLM + SFT，引入 NumPro 帧序号标注提升时序对齐</li>
+            <li>建立 Frame Accuracy / mIoU / F1@10/25/50 评测体系，目标帧级准确率 ≥80%，结算环节 Recall/Precision ≥90%</li>
+          </ul>
+        </article>
+
+        <article class="project">
+          <div class="project-head">
+            <h3>GUI Agent</h3>
+            <span class="project-org">蚂蚁集团 · 数字支付技术部</span>
+            <span class="project-date">2026.01 — 至今</span>
+          </div>
+          <p class="project-desc">面向支付宝 B 端复杂后台表单，构建「探索 - 校验 - 执行」GUI Agent 全链路体系，覆盖表单结构自动发现、操作结果分层校验及评测基准构建。</p>
+          <div class="sub-label">评测体系 &amp; 数据集建设</div>
+          <ul class="list">
+            <li>建立 Grounding / 静态轨迹 / OSWorld 在线三级评测体系，覆盖 B 端商家平台「点得准 → 办得成 → 端到端可验证」全链路能力</li>
+            <li><span class="strong">Grounding 数据集</span>：基于 Stagehand 自动采集 DOM 可交互元素并完成 BBox 标注，经 VLM 反向生成 instruction，以 Point-in-Box 指标评测</li>
+            <li><span class="strong">轨迹数据集</span>：基于 DFS 页面遍历与 SKILL 自动生成轨迹，采用 offline teacher forcing 方式评测多步 Navigation 与 Grounding 联合能力</li>
+            <li><span class="strong">OSWorld 数据集</span>：基于 OSWorld Benchmark 通过 SKILL 批量生成 B 端商家平台在线任务并设计 URL、DOM 等多类型 evaluator 并逐个手工校验，Mobile Agent V3 达 <span class="metric">54.05%</span></li>
+          </ul>
+          <div class="sub-label">前置探索流水线：表单 Schema 与 Workflow 测试数据生成</div>
+          <ul class="list">
+            <li>设计 GUI Agent 全链路数据源入口：自动抽取表单字段 Workflow、探索条件分支并输出 Schema DAG，为脚本生成、轨迹数据集与评测基准提供结构化测试参数</li>
+            <li>Workflow 自举：基于 CDP Accessibility Tree 从空白表单零配置提取字段序贯遍历序列；支持预填充模式跳过重复填表，直接驱动后续探索</li>
+            <li>栈式 DFS 条件分支探索：遇 radio/combobox 等条件控件入 Exploration Stack，逐选项采集 DOM 快照并深度优先递归嵌套子分支，路径 Memory 注入 Agent 上下文，增量构建条件控件 DAG</li>
+            <li>全量快照交叉 Diff 分组：将 pair-wise 基线对比升级为 N 选项快照字段集合的交集/差集分析，将 50+ 选项归并为 3–5 组条件依赖，精确刻画控件出现/消失边界</li>
+            <li>CDP 结构化解析 + VLM 双通道控件识别，代码直操优先、Agent 降级兜底，探索成功率 <span class="metric">70% → 99%</span></li>
+          </ul>
+          <div class="sub-label">后置校验模块：执行结果分层校验（Validator）</div>
+          <ul class="list">
+            <li>设计 NodeValidator 六步校验流水线，嵌入 Workflow 末端对 Agent/脚本每步执行结果做 before/after 快照比对与闭环验证</li>
+            <li>控件感知分层校验：VLM + DOM 多阶段控件类型检测，RuleChecker 规则优先短路、LLMJudge 多模态兜底，按控件动态注入 Judge Anchors 判断标准</li>
+            <li>基于 widgets_config.yaml 纯配置驱动校验规则与锚点定义，新增控件类型零代码扩展，降低 LLM 调用成本与误判率</li>
+          </ul>
+        </article>
+
+        <article class="project">
+          <div class="project-head">
+            <h3>2026 ANT HACKATHON — 萤鸣（情绪陪伴 APP）</h3>
+            <span class="project-org">蚂蚁集团</span>
+            <span class="project-date">2026.05</span>
+          </div>
+          <ul class="list">
+            <li>负责首页 UI 与交互设计，实现语音输入在多场景下的实时链接与语义扩充，覆盖股票查询、图片检索、地理位置、联网搜索等能力</li>
+          </ul>
+          <div class="refs">
+            <a href="https://ant-space.antgroup-inc.cn/detail?id=20260526111606230010010140686584" target="_blank" rel="noopener">48h 黑客松，我们用「品味」做了一款「关心你情绪」的记忆 iOS App</a><br>
+            <a href="https://ant-space.antgroup-inc.cn/detail?id=20260525234456393410010140670274" target="_blank" rel="noopener">十年后，别人无痛拥有了自己的数字分身，而没用「萤鸣」的我：马什么梅？</a><br>
+            <a href="https://ant-space.antgroup-inc.cn/detail?id=20260526200224035310010140716500" target="_blank" rel="noopener">黑客松 48H｜从消除脑雾到数字永生：用「微习惯」捕捉灵光串联回忆</a>
+          </div>
+        </article>
+
+        <article class="project">
+          <div class="project-head">
+            <h3>收银台多目标优化 &amp; 垫支批处理</h3>
+            <span class="project-org">蚂蚁集团 · 数字支付技术部（实习）</span>
+            <span class="project-date">2024.06 — 2024.08</span>
+          </div>
+          <ul class="list">
+            <li>面向支付宝收银台支付决策场景，搭建 2D/3D 多目标优化实验与可视化框架，系统对比 ε-constraint、p-norm 标量化与 NSGA-II 等方法在不同目标组合下的帕累托前沿</li>
+            <li>解决三维优化中的极值点区间突变、线性规划求解耗时等工程瓶颈，引入拥挤度（crowding distance）机制保证解集分布均匀、避免局部聚集</li>
+            <li>参与垫支业务流批一体改造：设计小时粒度额度分配策略与约束规则，落地批处理任务服务化及接口方案</li>
+          </ul>
+        </article>
+
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <div class="block-label">其他</div>
+      <div class="card">
+        <ul class="list">
+          <li>「一存」Chrome Extension</li>
+          <li>00 后访谈播客（每期访谈一位 00 后，涵盖专业小语种、法律、AI 创业等）· 小宇宙 1000+ 听友</li>
+          <li><a href="https://xcooool.github.io/2025/02/17/web3/" target="_blank" rel="noopener">2025 年 Web3.0 创新大赛 — 碳资产 RWA 上链</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <footer class="reveal">2026</footer>
+  </div>
+
+  <script>
+    const PASSWORD_HASH = 'e488dcfeffefa05968b3e9df8fe2e0ca69508fe6be7bed164da5168d327f09bd';
+    const AUTH_KEY = 'cv-authenticated';
+    let resumeStarted = false;
+
+    function typeText(el, text, speed, cb) {
+      let i = 0;
+      el.innerHTML = '';
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      function tick() {
+        if (i < text.length) {
+          el.textContent = text.slice(0, ++i);
+          el.appendChild(cursor);
+          setTimeout(tick, speed);
+        } else {
+          cursor.remove();
+          if (cb) cb();
+        }
+      }
+      tick();
+    }
+
+    function initResume() {
+      if (resumeStarted) return;
+      resumeStarted = true;
+
+      const hideLoader = () => {
+        setTimeout(() => document.getElementById('loader').classList.add('hidden'), 600);
+      };
+      if (document.readyState === 'complete') {
+        hideLoader();
+      } else {
+        window.addEventListener('load', hideLoader, { once: true });
+      }
+
+      setTimeout(() => {
+        typeText(document.getElementById('hero-name'), '徐楚鸥', 90, () => {
+          typeText(document.getElementById('hero-tagline'), '算法工程师 · 香港科技大学 26 届 · 蚂蚁集团支付宝', 28, () => {
+            document.getElementById('hero-pills').style.opacity = '1';
+          });
+        });
+      }, 700);
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('visible');
+              observer.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+      );
+      document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    }
+
+    function unlockPage() {
+      sessionStorage.setItem(AUTH_KEY, '1');
+      document.body.classList.remove('auth-locked');
+      document.getElementById('auth-screen').hidden = true;
+      initResume();
+    }
+
+    async function hashPassword(value) {
+      const data = new TextEncoder().encode(value);
+      const digest = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(digest))
+        .map((byte) => byte.toString(16).padStart(2, '0'))
+        .join('');
+    }
+
+    document.getElementById('auth-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const password = document.getElementById('auth-password').value;
+      const error = document.getElementById('auth-error');
+      error.textContent = '';
+
+      if (await hashPassword(password) === PASSWORD_HASH) {
+        unlockPage();
+      } else {
+        error.textContent = '密码不正确，请重试。';
+      }
+    });
+
+    if (sessionStorage.getItem(AUTH_KEY) === '1') {
+      unlockPage();
+    }
+  </script>
+</body>
+</html>
