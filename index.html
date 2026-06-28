@@ -651,7 +651,7 @@
           </ul>
           <div class="sub-label">前置探索流水线：表单 Schema DAG 与 Workflow 结构化建模</div>
           <ul class="list">
-            <li>设计 GUI Agent 全链路数据源入口：自动抽取表单字段 Workflow、探索条件分支并输出 Schema DAG，为执行阶段的脚本生成、轨迹数据集与评测基准提供结构化测试参数</li>
+            <li>设计 GUI Agent 全链路数据源入口：在沙箱环境7*24h自动抽取表单字段 Workflow、探索条件分支并输出 Schema DAG，为执行阶段的脚本生成、轨迹数据集与评测基准提供结构化测试参数</li>
             <li>面向复杂表单填写页控件自动探索，设计并实现 Hermes Agent + SKILL + Playwright Daemon Harness 混合架构：将 DOM 操作、浏览器 Session 热状态与 DAG Schema checkpoint 下沉至 Harness；通过 HTTP 协议解耦 Agent 与浏览器，Agent 对话可按控件无状态重启、探索态常驻 Daemon，彻底解决纯 Agent 探索幻觉、选项截断与长任务中断等问题</li>
             <li>提出 DFS + Memory Stack 回溯的条件分支探索流程：逐选项切换采集字段快照，三阶段交叉验证自动发现分支类控件触发的显隐依赖 DAG，支持 composite 复合控件先探索后动态命名</li>
             <li>构建 Phase1 顶层实例拆分与 Phase2 并行探索两阶段编排及 Golden 回归体系，在 Golden Dataset 上达成 Node Recall 100%、Node Accuracy 93–97%、Edge F1 100%</li>
