@@ -408,15 +408,26 @@
     .project-date { margin-left: auto; font-size: 12px; color: var(--text-muted); white-space: nowrap; }
     .project-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; }
     .sub-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 14px 0 8px; }
-    .metric { color: var(--green); font-weight: 500; }
+    .metric { color: #2563eb; font-weight: 500; }
     .strong { color: var(--text); font-weight: 500; }
 
     .refs {
-      margin-top: 12px; padding: 14px 16px;
-      background: var(--bg-alt); border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 12px; color: var(--text-muted); line-height: 1.85;
+      margin-top: 6px;
+      padding: 0;
+      background: none;
+      border: none;
+      border-radius: 0;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.65;
     }
+    .refs a {
+      color: #2563eb;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .pdf-web-hint { display: none; }
 
     footer { text-align: center; font-size: 12px; color: var(--text-muted); padding: 40px 0 0; }
 
@@ -504,6 +515,10 @@
         <span class="pill">香港科技大学 · 26 届计算机科学与技术</span>
       </div>
     </section>
+
+    <p class="pdf-web-hint" aria-hidden="true">
+      访问<a href="https://xcooool.github.io/cv/" target="_blank" rel="noopener">xcooool.github.io/cv/</a>查看网页版简历｜解锁: xcooool2026
+    </p>
 
     <div class="block reveal">
       <div class="block-label">教育经历</div>

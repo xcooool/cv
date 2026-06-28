@@ -361,9 +361,9 @@
       padding-left: 16px; position: relative; line-height: 1.65;
     }
     .entry-bullets li::before {
-      content: ""; position: absolute; left: 0; top: 9px;
+      content: ""; position: absolute; left: 0; top: 10px;
       width: 5px; height: 5px; border-radius: 50%;
-      background: var(--green); opacity: 0.55;
+      background: rgba(37, 99, 235, 0.5);
     }
 
     .list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
@@ -373,8 +373,8 @@
     }
     .list li::before {
       content: ""; position: absolute; left: 0; top: 10px;
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--green); opacity: 0.55;
+      width: 5px; height: 5px; border-radius: 50%;
+      background: rgba(37, 99, 235, 0.5);
     }
 
     .paper-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; line-height: 1.55; }
@@ -408,15 +408,26 @@
     .project-date { margin-left: auto; font-size: 12px; color: var(--text-muted); white-space: nowrap; }
     .project-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; }
     .sub-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 14px 0 8px; }
-    .metric { color: var(--green); font-weight: 500; }
+    .metric { color: #2563eb; font-weight: 500; }
     .strong { color: var(--text); font-weight: 500; }
 
     .refs {
-      margin-top: 12px; padding: 14px 16px;
-      background: var(--bg-alt); border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 12px; color: var(--text-muted); line-height: 1.85;
+      margin-top: 6px;
+      padding: 0;
+      background: none;
+      border: none;
+      border-radius: 0;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.65;
     }
+    .refs a {
+      color: #2563eb;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .pdf-web-hint { display: none; }
 
     footer { text-align: center; font-size: 12px; color: var(--text-muted); padding: 40px 0 0; }
 
@@ -504,6 +515,10 @@
         <span class="pill">香港科技大学 · 26 届计算机科学与技术</span>
       </div>
     </section>
+
+    <p class="pdf-web-hint" aria-hidden="true">
+      访问<a href="https://xcooool.github.io/cv/" target="_blank" rel="noopener">xcooool.github.io/cv/</a>查看网页版简历｜解锁: xcooool2026
+    </p>
 
     <div class="block reveal">
       <div class="block-label">教育经历</div>
@@ -670,6 +685,9 @@
             <span class="project-org">蚂蚁集团</span>
             <span class="project-date">2026.05</span>
           </div>
+          <ul class="list">
+            <li>「萤鸣」是一款面向个人的情绪陪伴与记忆管理 APP，旨在帮助用户无阻力无痛地记录生活中的细小情绪和瞬间，并通过多模态内容存储与智能召回，让用户以第三方视角的形式够被温柔地回应和看见。</li>
+          </ul>
           <ul class="list">
             <li>负责首页 UI 与交互设计，实现语音输入在多场景下的实时链接与语义扩充，覆盖股票查询、图片检索、地理位置、联网搜索等能力</li>
           </ul>
