@@ -649,13 +649,12 @@
             <li><span class="strong">轨迹数据集</span>：基于 DFS 页面遍历与 SKILL 自动生成轨迹，采用 offline teacher forcing 方式评测多步 Navigation 与 Grounding 联合能力</li>
             <li><span class="strong">类OSWorld 数据集</span>：基于 OSWorld Benchmark 通过 SKILL 批量生成 B 端商家平台在线任务并设计 URL、DOM、file 等多类型 evaluator 并逐个手工校验，Mobile Agent V3 达 <span class="metric">54.05%</span></li>
           </ul>
-          <div class="sub-label">前置探索流水线：表单 Schema DAG 与 Workflow 测试数据生成</div>
+          <div class="sub-label">前置探索流水线：表单 Schema DAG 与 Workflow 结构化建模</div>
           <ul class="list">
             <li>设计 GUI Agent 全链路数据源入口：自动抽取表单字段 Workflow、探索条件分支并输出 Schema DAG，为执行阶段的脚本生成、轨迹数据集与评测基准提供结构化测试参数</li>
-            <li>Workflow 自举：基于 CDP a11y Tree 从空白表单零配置提取字段序贯遍历序列；支持预填充模式跳过重复填表，直接驱动后续探索</li>
-            <li>栈式 DFS 条件分支探索：遇 radio/combobox 等条件控件入 Exploration Stack，逐选项采集 DOM 快照并深度优先递归嵌套子分支，路径 Memory 注入 Agent 上下文，增量构建条件控件 DAG</li>
-            <li>全量快照交叉 Diff 分组：将 pair-wise 基线对比升级为 N 选项快照字段集合的交集/差集分析，将 50+ 选项归并为 3–5 组条件依赖，精确刻画控件出现/消失边界</li>
-            <li>CDP 结构化解析 + VLM 双通道控件识别，代码直操优先、Agent 降级兜底，探索成功率 <span class="metric">70% → 99%</span></li>
+            <li>面向复杂表单填写页控件自动探索，设计并实现 Hermes Agent + SKILL + Playwright Daemon Harness 混合架构：将 DOM 操作、浏览器 Session 热状态与 DAG Schema checkpoint 下沉至 Harness；通过 HTTP 协议解耦 Agent 与浏览器，Agent 对话可按控件无状态重启、探索态常驻 Daemon，彻底解决纯 Agent 探索幻觉、选项截断与长任务中断等问题</li>
+            <li>提出 DFS + Memory Stack 回溯的条件分支探索流程：逐选项切换采集字段快照，三阶段交叉验证自动发现分支类控件触发的显隐依赖 DAG，支持 composite 复合控件先探索后动态命名</li>
+            <li>构建 Phase1 顶层实例拆分与 Phase2 并行探索两阶段编排及 Golden 回归体系，在 Golden Dataset 上达成 Node Recall 100%、Node Accuracy 93–97%、Edge F1 100%</li>
           </ul>
           <div class="sub-label">后置校验模块：执行结果分层校验（Validator）</div>
           <ul class="list">
@@ -720,7 +719,7 @@
     sessionStorage.removeItem('cv-authenticated');
 
     const SOCIAL = [
-      { type: 'xhs', label: 'Bonny', url: 'https://www.xiaohongshu.com/user/profile/68a2ea360000000018030e8b' },
+      { type: 'xhs', label: 'Bonny', url: 'https://www.xiaohongshu.com/user/profile/5d199921000000001201f3fe' },
       { type: 'xyz', label: '00后的深水区', url: 'https://www.xiaoyuzhoufm.com/podcast/694401103454d556ccb4a549' },
       { type: 'gh', label: 'XcooL', url: 'https://xcooool.github.io/' },
     ];
